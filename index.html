@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Windows Terminal Multi-Panel Setup Generator - Create complex multi-panel layouts and generate PowerShell commands">
     <meta name="keywords" content="Windows Terminal, PowerShell, multi-panel, generator, GUI">
-    <meta name="author" content="Windows Terminal Generator">
+    <meta name="author" content="Ugurcan Dede">
+    <meta name="theme-color" content="#2563eb">
 
     <title>Windows Terminal Multi-Panel Setup Generator</title>
 
@@ -67,6 +68,12 @@
                         <a href="https://github.com/ugurcandede" target="_blank" class="font-semibold text-gray-700 dark:text-gray-300">Ugurcan Dede</a>
                         <i class="fas fa-heart text-red-500 text-xs"></i>
                     </div>
+
+                    <!-- Keyboard Shortcuts Button -->
+                    <button id="shortcuts-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Keyboard Shortcuts">
+                        <i class="fas fa-keyboard text-gray-600 dark:text-gray-300"></i>
+                    </button>
+
                     <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                         <i class="fas fa-moon dark:hidden text-gray-600"></i>
                         <i class="fas fa-sun hidden dark:inline text-yellow-400"></i>
@@ -256,6 +263,68 @@
             </div>
         </section>
     </main>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcuts-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-overlay">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 modal-content">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold flex items-center">
+                            <i class="fas fa-keyboard text-primary mr-2"></i>
+                            Keyboard Shortcuts
+                        </h3>
+                        <button id="shortcuts-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="space-y-3">
+                        <!-- Panel Management -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700 dark:text-gray-300">Add New Panel</span>
+                            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm font-mono">Ctrl + N</kbd>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700 dark:text-gray-300">Delete Selected Panel</span>
+                            <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm font-mono">Delete</kbd>
+                        </div>
+
+                        <!-- Configuration -->
+                        <div class="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700 dark:text-gray-300">Export Configuration</span>
+                                <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm font-mono">Ctrl + S</kbd>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700 dark:text-gray-300">Copy Output</span>
+                                <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm font-mono">Ctrl + C</kbd>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700 dark:text-gray-300">Hide Suggestions</span>
+                                <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm font-mono">Escape</kbd>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700 dark:text-gray-300">Show Shortcuts</span>
+                                <kbd class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-sm font-mono">?</kbd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 rounded-b-lg">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
+                        Pro tip: Focus on a panel card and press Delete to remove it quickly
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Hidden File Input for Import -->
     <input type="file" id="file-input" accept=".json" style="display: none;">
