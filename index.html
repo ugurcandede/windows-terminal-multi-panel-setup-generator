@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Windows Terminal Multi-Panel Setup Generator - Create complex multi-panel layouts and generate PowerShell commands">
+    <meta name="keywords" content="Windows Terminal, PowerShell, multi-panel, generator, GUI">
+    <meta name="author" content="Windows Terminal Generator">
+
+    <title>Windows Terminal Multi-Panel Setup Generator</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.png">
+
+    <!-- CDN Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/css/themes.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b',
+                        accent: '#0ea5e9',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        error: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo and Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-primary text-white p-2 rounded-lg">
+                        <i class="fas fa-terminal text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">Windows Terminal Generator</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Multi-Panel Setup Creator</p>
+                    </div>
+                </div>
+
+                <!-- Author Attribution & Theme Toggle -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span>Created by</span>
+<!--                        <span class="font-semibold text-gray-700 dark:text-gray-300">Ugurcan Dede</span>-->
+                        <a href="https://github.com/ugurcandede" target="_blank" class="font-semibold text-gray-700 dark:text-gray-300">Ugurcan Dede</a>
+                        <i class="fas fa-heart text-red-500 text-xs"></i>
+                    </div>
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-moon dark:hidden text-gray-600"></i>
+                        <i class="fas fa-sun hidden dark:inline text-yellow-400"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Template Bar -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Quick Templates</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- First Row -->
+                <button class="template-btn p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" data-template="fullstack">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-semibold">Full-Stack</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Frontend + Backend + DB</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="template-btn p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" data-template="devops">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-server text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-semibold">DevOps</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Monitoring + Docker + SSH</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="template-btn p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" data-template="testing">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-vial text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-semibold">Testing</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Unit + E2E Tests</p>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Second Row -->
+                <button class="template-btn p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" data-template="gamedev">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-gamepad text-orange-600 dark:text-orange-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-semibold">Game Dev</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Unity + Assets + Build</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="template-btn p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" data-template="dataops">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-database text-indigo-600 dark:text-indigo-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-semibold">Data Ops</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">DB + ETL + Analytics</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button class="template-btn p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow" data-template="mobile">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-pink-100 dark:bg-pink-900 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-mobile-alt text-pink-600 dark:text-pink-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-semibold">Mobile</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">React Native + iOS + Android</p>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Third Row - Custom spans full width on small screens -->
+                <button class="template-btn p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1" data-template="custom">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-plus text-gray-600 dark:text-gray-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-semibold">Custom</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Start from scratch</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Panel Configuration -->
+        <section class="mb-8" id="panel-configuration-section">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <h2 class="text-2xl font-bold">Panel Configuration</h2>
+                    <button id="collapse-all-panels" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Collapse/Expand All Panels">
+                        <i class="fas fa-chevron-up transition-transform duration-200" id="collapse-all-icon"></i>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="import-config" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-upload mr-2"></i>Import
+                    </button>
+                    <button id="export-config" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                    <button id="add-panel" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Add Panel
+                    </button>
+                </div>
+            </div>
+
+            <div id="panels-container" class="space-y-4">
+                <!-- Panel cards will be dynamically generated here -->
+            </div>
+        </section>
+
+        <!-- Live Preview -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Live Preview</h2>
+            <div class="bg-gray-900 dark:bg-slate-900 rounded-lg p-4 min-h-64">
+                <div class="bg-gray-800 dark:bg-slate-800 rounded-t-lg px-4 py-2 flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span class="text-white text-sm ml-4">Windows Terminal</span>
+                </div>
+                <div id="terminal-preview" class="bg-gray-800 dark:bg-slate-800 rounded-b-lg p-4 min-h-48 grid grid-cols-1">
+                    <div class="flex items-center justify-center text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-terminal text-4xl mb-2"></i>
+                        <p class="ml-4">Configure panels to see preview</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Output Section -->
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Generated Output</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <!-- Format Tabs -->
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                        <button class="output-tab py-4 px-1 border-b-2 font-medium text-sm active" data-format="powershell">
+                            <i class="fab fa-microsoft mr-2"></i>PowerShell
+                        </button>
+                        <button class="output-tab py-4 px-1 border-b-2 font-medium text-sm" data-format="json">
+                            <i class="fas fa-code mr-2"></i>JSON Action
+                        </button>
+                        <button class="output-tab py-4 px-1 border-b-2 font-medium text-sm" data-format="batch">
+                            <i class="fas fa-file-code mr-2"></i>Batch File
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Output Content -->
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 id="output-title" class="text-lg font-semibold">PowerShell Command</h3>
+                        <div class="flex items-center space-x-3">
+                            <button id="refresh-output" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Refresh Output">
+                                <i class="fas fa-sync-alt mr-2"></i>Refresh
+                            </button>
+                            <button id="copy-output" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-copy mr-2"></i>Copy to Clipboard
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <pre class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 overflow-x-auto"><code id="output-code" class="language-powershell"><!-- Generated code will appear here --></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Hidden File Input for Import -->
+    <input type="file" id="file-input" accept=".json" style="display: none;">
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Scripts -->
+    <script src="assets/js/templates.js"></script>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/generator.js"></script>
+    <script src="assets/js/panels.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
