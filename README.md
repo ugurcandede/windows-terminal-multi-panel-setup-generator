@@ -10,7 +10,7 @@ A powerful, modern web application for creating complex multi-panel Windows Term
 
 ## 🚀 Live Demo
 
-**Visit the live application:** [Open Windows Terminal Generator](https://ugurcandede.github.io/windows-terminal-generator)
+**Visit the live application:** [Open Windows Terminal Generator](https://ugurcandede.github.io/windows-terminal-multi-panel-setup-generator/)
 
 ## ✨ Features
 
