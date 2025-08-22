@@ -706,16 +706,56 @@ class PanelManager {
         }
 
         if (this.panels.length === 3) {
-            // Special handling for 3 panels: first panel on left, other two stacked on right
             const panel1Split = this.panels[1].split;
             const panel2Split = this.panels[2].split;
 
+            // Case 1: All vertical splits (Panel0 | Panel1 | Panel2)
+            if (panel1Split === 'vertical' && panel2Split === 'vertical') {
+                const areas = '"panel0 panel1 panel2"';
+                // Panel0 always gets 50% (0.5), Panel1 and Panel2 split the remaining 50%
+                const panel0Size = 0.5; // Always 50%
+                const remainingSpace = 1 - panel0Size; // 50% remaining for panel1 and panel2
+
+                // Use both panel1 and panel2 sizes to calculate their proportions
+                const panel1RelativeSize = this.panels[1].size || 0.5; // Panel1's relative size
+                const panel2RelativeSize = this.panels[2].size || 0.5; // Panel2's relative size
+
+                // Normalize the sizes so they add up to 1 within the remaining space
+                const totalRelativeSize = panel1RelativeSize + panel2RelativeSize;
+                const panel1Size = remainingSpace * (panel1RelativeSize / totalRelativeSize);
+                const panel2Size = remainingSpace * (panel2RelativeSize / totalRelativeSize);
+
+                const columns = `${panel0Size}fr ${panel1Size}fr ${panel2Size}fr`;
+                return { areas, rows: '1fr', columns };
+            }
+
+            // Case 2: First vertical, second horizontal (Panel0 | Panel1)
+            //                                           (       | Panel2)
             if (panel1Split === 'vertical' && panel2Split === 'horizontal') {
-                // Layout: Panel0 | Panel1
-                //                | Panel2
                 const areas = '"panel0 panel1" "panel0 panel2"';
                 const columns = `${1 - this.panels[1].size}fr ${this.panels[1].size}fr`;
                 const rows = `${1 - this.panels[2].size}fr ${this.panels[2].size}fr`;
+                return { areas, rows, columns };
+            }
+
+            // Case 3: First horizontal, second horizontal (Panel0)
+            //                                             (Panel1)
+            //                                             (Panel2)
+            if (panel1Split === 'horizontal' && panel2Split === 'horizontal') {
+                const areas = '"panel0" "panel1" "panel2"';
+                const panel1Size = this.panels[1].size || 0.33;
+                const panel2Size = this.panels[2].size || 0.33;
+                const panel0Size = 1 - panel1Size - panel2Size;
+                const rows = `${panel0Size}fr ${panel1Size}fr ${panel2Size}fr`;
+                return { areas, rows, columns: '1fr' };
+            }
+
+            // Case 4: First horizontal, second vertical (Panel0)
+            //                                           (Panel1 | Panel2)
+            if (panel1Split === 'horizontal' && panel2Split === 'vertical') {
+                const areas = '"panel0 panel0" "panel1 panel2"';
+                const rows = `${1 - this.panels[1].size}fr ${this.panels[1].size}fr`;
+                const columns = `${1 - this.panels[2].size}fr ${this.panels[2].size}fr`;
                 return { areas, rows, columns };
             }
         }
