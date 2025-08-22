@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 permissions:
   contents: read
@@ -31,8 +31,10 @@ jobs:
         with:
           path: .
 
-  # Deployment job
+  # Deploy job - only runs on master branch pushes
   deploy:
+    # Only deploy on master branch (not on PRs or other branches)
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
