@@ -305,7 +305,8 @@ class WindowsTerminalGenerator {
                 let output = '';
                 switch (this.currentFormat) {
                     case 'powershell':
-                        output = this.commandGenerator.generatePowerShellCommand(panels);
+                        // Use the formatted version for display
+                        output = this.commandGenerator.generatePowerShellCommandForDisplay(panels);
                         break;
                     case 'json':
                         output = this.commandGenerator.generateJSONAction(panels);
@@ -330,7 +331,7 @@ class WindowsTerminalGenerator {
             console.error('Error updating output:', error);
             const codeElement = document.getElementById('output-code');
             if (codeElement) {
-                codeElement.textContent = '# Error generating output: ' + error.message;
+                codeElement.textContent = '# Error generating output';
                 codeElement.className = 'language-text';
             }
         }
@@ -339,13 +340,26 @@ class WindowsTerminalGenerator {
     // Copy current output to clipboard
     async copyCurrentOutput() {
         try {
-            const codeElement = document.getElementById('output-code');
-            if (!codeElement) return;
+            const panels = this.panelManager.getPanels();
+            let textToCopy = '';
 
-            const success = await this.commandGenerator.copyToClipboard(codeElement.textContent);
+            // For PowerShell format, use the single-line version for clipboard
+            if (this.currentFormat === 'powershell' && panels && panels.length > 0) {
+                textToCopy = this.commandGenerator.generatePowerShellCommandForClipboard(panels);
+            } else {
+                // For other formats, use what's displayed
+                const codeElement = document.getElementById('output-code');
+                if (!codeElement) return;
+                textToCopy = codeElement.textContent;
+            }
+
+            const success = await this.commandGenerator.copyToClipboard(textToCopy);
 
             if (success) {
-                this.showToast('Copied to clipboard!', 'success');
+                const copyMessage = this.currentFormat === 'powershell' ?
+                    'PowerShell command copied as single line!' :
+                    'Copied to clipboard!';
+                this.showToast(copyMessage, 'success');
 
                 // Visual feedback on copy button
                 const copyButton = document.getElementById('copy-output');

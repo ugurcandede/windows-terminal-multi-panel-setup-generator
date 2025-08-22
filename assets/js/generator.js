@@ -12,20 +12,18 @@ class CommandGenerator {
         }
 
         let command = 'wt';
-        let isFirst = true;
 
         panels.forEach((panel, index) => {
-            if (isFirst) {
+            if (index === 0) {
                 // First panel - new tab
                 command += this.buildNewTabCommand(panel);
-                isFirst = false;
             } else {
                 // Additional panels - split panes
                 command += this.buildSplitPaneCommand(panel);
             }
         });
 
-        return this.formatPowerShellCommand(command);
+        return command;
     }
 
     // Build new-tab command for first panel
@@ -33,7 +31,7 @@ class CommandGenerator {
         let cmd = ' new-tab';
 
         if (panel.title) {
-            cmd += ` --title "${this.escapePowerShellString(panel.title)}"`;
+            cmd += ` --title "${this.escapePowerShellString(panel.title)}" --suppressApplicationTitle`;
         }
 
         if (panel.directory) {
@@ -61,28 +59,26 @@ class CommandGenerator {
 
     // Build split-pane command for additional panels
     buildSplitPaneCommand(panel) {
-        let cmd = ' ;';
+        let cmd = ' `; split-pane';
 
         // Split direction
-        if (panel.split === 'vertical') {
-            cmd += ' split-pane -V';
-        } else if (panel.split === 'horizontal') {
-            cmd += ' split-pane -H';
+        if (panel.split === 'horizontal') {
+            cmd += ' -H';
         } else {
-            cmd += ' split-pane -V'; // Default to vertical
-        }
-
-        // Panel size
-        if (panel.size && panel.size !== 1.0) {
-            cmd += ` --size ${panel.size}`;
+            cmd += ' -V'; // Default to vertical
         }
 
         if (panel.title) {
-            cmd += ` --title "${this.escapePowerShellString(panel.title)}"`;
+            cmd += ` --title "${this.escapePowerShellString(panel.title)}" --suppressApplicationTitle`;
         }
 
         if (panel.directory) {
             cmd += ` --startingDirectory "${this.escapePowerShellPath(panel.directory)}"`;
+        }
+
+        // Panel size
+        if (panel.size && panel.size !== 0.5) {
+            cmd += ` --size ${panel.size}`;
         }
 
         if (panel.color && panel.color !== '#64748b') {
@@ -118,15 +114,6 @@ class CommandGenerator {
             default:
                 return 'pwsh'; // Default to PowerShell
         }
-    }
-
-    // Format PowerShell command for readability
-    formatPowerShellCommand(command) {
-        // Add line breaks for better readability
-        return command
-            .replace(/; split-pane/g, ' ;\n  split-pane')
-            .replace(/^wt/, 'wt `\n  ')
-            .replace(/;$/, '');
     }
 
     // Generate JSON Action format
@@ -445,6 +432,34 @@ class CommandGenerator {
         console.log('Current format:', this.currentFormat);
         console.log('Panels:', panels);
         console.log('Generated outputs:', this.generateAll(panels));
+    }
+
+    // Generate PowerShell command for display (formatted)
+    generatePowerShellCommandForDisplay(panels) {
+        const rawCommand = this.generatePowerShellCommand(panels);
+        if (!panels || panels.length === 0) {
+            return rawCommand;
+        }
+
+        // Format the command for better readability
+        return rawCommand
+            .replace(/`; split-pane/g, ' `;\n  split-pane')
+            .replace(/^wt/, 'wt `\n ')
+            .replace(/--title/g, '\n    --title')
+            .replace(/--startingDirectory/g, '\n    --startingDirectory')
+            .replace(/--suppressApplicationTitle/g, '\n    --suppressApplicationTitle')
+            .replace(/--tabColor/g, '\n    --tabColor')
+            .replace(/--size/g, '\n    --size')
+            .replace(/-Command/g, '\n    -Command')
+            .replace(/pwsh/g, '\n    pwsh')
+            .replace(/cmd/g, '\n    cmd')
+            .replace(/bash/g, '\n    bash')
+            .replace(/wsl/g, '\n    wsl');
+    }
+
+    // Generate PowerShell command for clipboard (single line)
+    generatePowerShellCommandForClipboard(panels) {
+        return this.generatePowerShellCommand(panels);
     }
 }
 
