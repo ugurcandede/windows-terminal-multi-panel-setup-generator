@@ -267,13 +267,7 @@ Created with ❤️ by **Ugurcan Dede**
 - **SortableJS** for drag and drop functionality
 - **Community contributors** for feedback and suggestions
 
-## 📞 Support
-
-- 🐛 **Bug Reports**: [Open an Issue](https://github.com/ugurcandede/windows-terminal-multi-panel-setup-generator/issues)
-- 💡 **Feature Requests**: [Discussion Board](https://github.com/ugurcandede/windows-terminal-multi-panel-setup-generator/discussions)
-
 ---
-
 <div align="center">
 
 **⭐ Star this project if you find it useful! ⭐**
