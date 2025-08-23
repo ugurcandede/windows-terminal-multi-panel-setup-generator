@@ -63,12 +63,6 @@ Professional templates for common development scenarios:
 - **Touch Support**: Full touch interface support for tablets
 - **Accessibility**: Screen reader friendly with proper ARIA labels
 
-### 🔄 Real-Time Features
-- **Live Output Updates**: Generated code updates as you type
-- **Manual Refresh**: Force refresh button with spinning animation
-- **Instant Preview**: See your terminal layout change in real-time
-- **Smart Debouncing**: Optimized performance with intelligent update timing
-
 ## 🛠️ Installation & Usage
 
 ### Quick Start
@@ -96,22 +90,26 @@ npx serve .
 ### Basic Commands
 ```powershell
 # Single panel with command
-wt new-tab --title "Development" --startingDirectory "C:\Projects" pwsh -Command "npm start"
+wt new-tab --title "Development" --suppressApplicationTitle --startingDirectory "C:\Projects" --tabColor "#4ecdc4" pwsh -Command "npm start"
 
-# Vertical split
-wt new-tab ; split-pane -V --size 0.7
+# Vertical split with size
+wt
+    new-tab --title "Frontend" --suppressApplicationTitle --startingDirectory "C:\Projects\frontend" pwsh -Command "npm run dev" `;
+    split-pane -V --size 0.7 --title "Backend" --suppressApplicationTitle --startingDirectory "C:\Projects\backend" pwsh -Command "npm run server"
 
 # Horizontal split
-wt new-tab ; split-pane -H --size 0.3
+wt 
+    new-tab --title "Main" --suppressApplicationTitle --startingDirectory "C:\Projects" pwsh -Command "npm start" `; 
+    split-pane -H --size 0.3 --title "Logs" --suppressApplicationTitle --startingDirectory "C:\Projects\logs" pwsh -Command "Get-Content app.log -Wait"
 ```
 
 ### Advanced Multi-Panel Setup
 ```powershell
 # Complex development environment
-wt `
-  new-tab --title "Frontend" --startingDirectory "C:\Projects\frontend" --tabColor "#4ecdc4" pwsh -Command "npm run dev" ;`
-  split-pane -V --size 0.6 --title "Backend" --startingDirectory "C:\Projects\backend" --tabColor "#ff6b6b" pwsh -Command "npm run server" ;`
-  split-pane -H --size 0.4 --title "Database" --startingDirectory "C:\Projects" --tabColor "#45b7d1" pwsh -Command "docker-compose up db"
+wt 
+    new-tab --title "Frontend" --suppressApplicationTitle --startingDirectory "C:\Projects\frontend" --tabColor "#4ecdc4" pwsh -Command "npm run dev" `; 
+    split-pane -V --size 0.6 --title "Backend" --suppressApplicationTitle --startingDirectory "C:\Projects\backend" --tabColor "#ff6b6b" pwsh -Command "npm run server" `;
+    split-pane -H --size 0.4 --title "Database" --suppressApplicationTitle --startingDirectory "C:\Projects" --tabColor "#45b7d1" pwsh -Command "docker-compose up db"
 ```
 
 ### JSON Action Format
@@ -144,35 +142,10 @@ wt `
       }
     ]
   },
-  "name": "Development Setup",
+  "name": "Development Server + Application Logs",
   "icon": "🚀"
 }
 ```
-
-## 🎯 Key Features Deep Dive
-
-### Smart Auto-Complete
-- **Directory Suggestions**: Common Windows paths and project directories
-- **Command Suggestions**: Popular development commands and scripts
-- **Profile Detection**: Automatic profile selection based on directory context
-
-### Advanced Panel Controls
-- **Size Precision**: 10% increments with visual percentage display
-- **Split Direction**: Intuitive vertical/horizontal split configuration
-- **Color Customization**: 6 preset colors plus unlimited custom hex colors
-- **Title Intelligence**: Auto-generate titles based on directory and commands
-
-### Export & Sharing
-- **Multiple Formats**: PowerShell, JSON, and Batch file generation
-- **URL Parameters**: Complete configuration encoded in shareable URLs
-- **JSON Import/Export**: Full configuration backup and restore
-- **Copy to Clipboard**: One-click copying with visual feedback
-
-### Performance Optimizations
-- **Debounced Updates**: Smart update timing for smooth performance
-- **Lazy Loading**: Efficient resource loading for fast startup
-- **Minimal Dependencies**: Lightweight architecture with CDN resources
-- **Memory Efficient**: Optimized state management and DOM manipulation
 
 ## 🔧 Technical Architecture
 
@@ -183,24 +156,6 @@ wt `
 - **Prism.js**: Syntax highlighting for generated code
 - **SortableJS**: Drag and drop functionality for panel reordering
 
-### Key Technologies
-- **ES6+ JavaScript**: Modern JavaScript features for clean, maintainable code
-- **CSS Grid & Flexbox**: Advanced layout techniques for responsive design
-- **LocalStorage API**: Client-side persistence for user configurations
-- **URL Parameters**: Configuration sharing through encoded URLs
-- **File API**: Import/export functionality for configuration files
-
-### Browser Support
-- **Chrome/Edge**: 90+ (Recommended)
-- **Firefox**: 88+
-- **Safari**: 14+
-- **Mobile**: iOS Safari 14+, Chrome Mobile 90+
-
-### Performance Metrics
-- **First Load**: < 500ms on broadband
-- **Interaction Response**: < 16ms for 60fps animations
-- **Bundle Size**: < 200KB total (excluding CDN resources)
-- **Accessibility Score**: 95+ (Lighthouse)
 
 ## 🤝 Contributing
 
@@ -219,31 +174,11 @@ We welcome contributions! Here's how you can help:
 - Test on multiple browsers and screen sizes
 - Update documentation for new features
 
-## 📝 Changelog
-
-### Latest Version (Current)
-- ✅ **Custom Color Picker**: Unlimited color options with hex color support
-- ✅ **Real-time Output Updates**: Generated code updates as you type
-- ✅ **Manual Refresh Button**: Force refresh with visual feedback
-- ✅ **Smooth Panel Animations**: Enhanced collapse/expand animations
-- ✅ **Import Bug Fixes**: Fixed output updates after importing configurations
-- ✅ **Enhanced JSON Format**: Proper Windows Terminal action format
-- ✅ **Path Escaping Fix**: Correct JSON path escaping (2 backslashes instead of 4)
-- ✅ **UI Polish**: Improved attribution, animations, and user feedback
-
-### Previous Versions
-- **Panel Management**: Drag & drop reordering, collapsible panels
-- **Template System**: Quick-start templates for common scenarios
-- **Export Formats**: PowerShell, JSON, and Batch file generation
-- **Theme Support**: Dark/light mode with system preference detection
-- **Responsive Design**: Mobile and tablet optimizations
-
 ## 🐛 Known Issues & Solutions
 
 ### Common Issues
 1. **Long paths in JSON**: Use double backslashes (`\\`) for Windows paths
 2. **Commands not executing**: Ensure PowerShell execution policy allows scripts
-3. **Import not working**: Check JSON file format matches export structure
 
 ### Troubleshooting
 - **Clear browser cache** if experiencing odd behavior
