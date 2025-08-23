@@ -265,8 +265,7 @@ class TemplateManager {
             { value: "PowerShell", label: "PowerShell", icon: "fab fa-microsoft" },
             { value: "Command Prompt", label: "Command Prompt", icon: "fas fa-terminal" },
             { value: "Git Bash", label: "Git Bash", icon: "fab fa-git-alt" },
-            { value: "Ubuntu", label: "Ubuntu (WSL)", icon: "fab fa-ubuntu" },
-            { value: "Custom", label: "Custom Profile", icon: "fas fa-cog" }
+            { value: "Ubuntu", label: "Ubuntu (WSL)", icon: "fab fa-ubuntu" }
         ];
 
         this.panelColors = [
