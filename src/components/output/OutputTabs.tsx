@@ -80,7 +80,7 @@ function CodePane({ code, language, actions }: CodePaneProps) {
         </div>
       </div>
       <div className="-mt-12">
-        <CodeBlock code={code} language={language} className="pt-14" />
+        <CodeBlock code={code} language={language} className="pt-4" />
       </div>
     </div>
   );

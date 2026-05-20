@@ -15,14 +15,14 @@ const UNIX_HINTS = /\b(ls\s|cat\s|grep\s|awk\s|sed\s|tail\s|head\s|chmod\s|chown
 const detectMismatch = (profile: Profile, commands: string): string | null => {
   const c = commands;
   if (!c.trim()) return null;
-  if (profile === 'Git Bash' || profile === 'Ubuntu' || profile === 'Command Prompt') {
+  if (profile === 'Git Bash' || profile === 'WSL' || profile === 'Command Prompt') {
     if (POWERSHELL_HINTS.test(c)) {
       return `Looks like PowerShell syntax — consider switching profile to PowerShell.`;
     }
   }
   if (profile === 'PowerShell' || profile === 'Command Prompt') {
     if (UNIX_HINTS.test(c)) {
-      return `Looks like Unix shell syntax — consider switching profile to Git Bash or Ubuntu.`;
+      return `Looks like Unix shell syntax — consider switching profile to Git Bash or WSL.`;
     }
   }
   return null;
