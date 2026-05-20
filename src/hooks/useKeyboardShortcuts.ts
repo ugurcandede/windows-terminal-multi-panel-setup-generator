@@ -68,6 +68,36 @@ export const useKeyboardShortcuts = ({ onShowShortcuts, onAddPanel }: Options) =
         return;
       }
 
+      // ←/→ — navigate between panes in the active tab
+      // ↑/↓ — navigate between tabs
+      if (key === 'ArrowLeft' || key === 'ArrowRight') {
+        const state = useEditorStore.getState();
+        const tab = state.tabs.find((t) => t.id === state.activeTabId);
+        if (!tab || tab.panels.length < 2) return;
+        e.preventDefault();
+        const currentIdx = state.selectedId
+          ? tab.panels.findIndex((p) => p.id === state.selectedId)
+          : -1;
+        const delta = key === 'ArrowLeft' ? -1 : 1;
+        const base = currentIdx === -1 ? (delta === 1 ? -1 : 0) : currentIdx;
+        const len = tab.panels.length;
+        const nextIdx = ((base + delta) % len + len) % len;
+        state.setSelected(tab.panels[nextIdx].id);
+        return;
+      }
+
+      if (key === 'ArrowUp' || key === 'ArrowDown') {
+        const state = useEditorStore.getState();
+        if (state.tabs.length < 2) return;
+        e.preventDefault();
+        const currentIdx = state.tabs.findIndex((t) => t.id === state.activeTabId);
+        const delta = key === 'ArrowUp' ? -1 : 1;
+        const len = state.tabs.length;
+        const nextIdx = ((currentIdx + delta) % len + len) % len;
+        state.setActiveTab(state.tabs[nextIdx].id);
+        return;
+      }
+
       // ? — show shortcuts dialog
       if (key === '?') {
         e.preventDefault();
