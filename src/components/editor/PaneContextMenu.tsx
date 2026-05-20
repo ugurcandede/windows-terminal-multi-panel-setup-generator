@@ -19,6 +19,7 @@ export function PaneContextMenu({ panel, children }: Props) {
   const panels = useActivePanels();
   const addPanel = useEditorStore((s) => s.addPanel);
   const deletePanel = useEditorStore((s) => s.deletePanel);
+  const duplicatePanel = useEditorStore((s) => s.duplicatePanel);
 
   const atMax = panels.length >= MAX_PANELS;
   const isOnlyPanel = panels.length <= 1;
@@ -37,6 +38,10 @@ export function PaneContextMenu({ panel, children }: Props) {
         </ContextMenuItem>
         <ContextMenuItem disabled={atMax} onSelect={() => splitFrom('horizontal')}>
           Split horizontal (-H)
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem disabled={atMax} onSelect={() => duplicatePanel(panel.id)}>
+          Duplicate pane
         </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem
