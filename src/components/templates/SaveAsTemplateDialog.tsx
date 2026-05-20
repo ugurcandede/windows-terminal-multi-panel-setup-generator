@@ -11,13 +11,13 @@ import {
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
 import { baseInputClass } from '@/components/inspector/Field';
-import { useEditorStore } from '@/store/editorStore';
+import { useActivePanels } from '@/store/editorStore';
 import { useTemplatesStore } from '@/store/templatesStore';
 
 export function SaveAsTemplateDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
-  const panels = useEditorStore((s) => s.panels);
+  const panels = useActivePanels();
   const saveAsTemplate = useTemplatesStore((s) => s.saveAsTemplate);
 
   const handleSave = () => {

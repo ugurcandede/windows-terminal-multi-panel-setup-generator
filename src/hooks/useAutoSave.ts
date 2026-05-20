@@ -12,11 +12,10 @@ export function useAutoSave() {
   useEffect(() => {
     if (!autoSave) return;
     const unsub = useEditorStore.subscribe((state, prev) => {
-      if (state.panels === prev.panels) return;
-      debounced(state.panels);
+      if (state.tabs === prev.tabs) return;
+      debounced(state.tabs);
     });
-    // also persist on first run
-    debounced(useEditorStore.getState().panels);
+    debounced(useEditorStore.getState().tabs);
     return unsub;
   }, [autoSave, debounced]);
 }

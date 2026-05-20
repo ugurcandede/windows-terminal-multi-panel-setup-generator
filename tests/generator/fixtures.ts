@@ -1,4 +1,5 @@
 import type { Panel } from '@/types/panel';
+import type { Tab } from '@/types/tab';
 
 export const makePanel = (overrides: Partial<Panel> = {}): Panel => ({
   id: 'p1',
@@ -23,3 +24,13 @@ export const minimalFirst = (overrides: Partial<Panel> = {}): Panel => ({
   size: 1.0,
   ...overrides,
 });
+
+export const tab = (panels: Panel[], name = ''): Tab => ({
+  id: 't1',
+  name,
+  panels,
+});
+
+/** Convenience: wraps panels in a single default tab. Most generator tests
+ *  only care about the panel layer, so they call this. */
+export const singleTab = (panels: Panel[]): Tab[] => [tab(panels)];

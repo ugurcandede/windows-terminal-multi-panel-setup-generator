@@ -5,9 +5,8 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/ContextMenu';
-import { useEditorStore } from '@/store/editorStore';
-import { MAX_PANELS, DEFAULT_SIZE, type SplitDirection } from '@/types/panel';
-import { nanoid } from 'nanoid';
+import { useActivePanels, useEditorStore } from '@/store/editorStore';
+import { MAX_PANELS, type SplitDirection } from '@/types/panel';
 import type { Panel } from '@/types/panel';
 import type { ReactNode } from 'react';
 
@@ -17,30 +16,16 @@ interface Props {
 }
 
 export function PaneContextMenu({ panel, children }: Props) {
-  const panels = useEditorStore((s) => s.panels);
+  const panels = useActivePanels();
+  const addPanel = useEditorStore((s) => s.addPanel);
   const deletePanel = useEditorStore((s) => s.deletePanel);
 
   const atMax = panels.length >= MAX_PANELS;
   const isOnlyPanel = panels.length <= 1;
 
   const splitFrom = (direction: SplitDirection) => {
-    // Always append a new pane to the end of the array — buildLayoutTree treats
-    // each newly added panel as a split off the current last leaf. This matches
-    // the wt semantics: splits operate on the currently active pane.
     if (atMax) return;
-    useEditorStore.setState((s) => {
-      const newPanel: Panel = {
-        id: nanoid(8),
-        title: '',
-        directory: '',
-        commands: '',
-        color: '#64748b',
-        profile: 'PowerShell',
-        split: direction,
-        size: DEFAULT_SIZE,
-      };
-      return { panels: [...s.panels, newPanel], selectedId: newPanel.id };
-    });
+    addPanel(direction);
   };
 
   return (

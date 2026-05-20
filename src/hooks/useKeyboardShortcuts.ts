@@ -44,7 +44,7 @@ export const useKeyboardShortcuts = ({ onShowShortcuts, onAddPanel }: Options) =
       // collide with default browser actions on Win/Mac/Linux).
       if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && (key === 'e' || key === 'E')) {
         e.preventDefault();
-        downloadConfigFile(useEditorStore.getState().panels);
+        downloadConfigFile(useEditorStore.getState().tabs);
         return;
       }
 

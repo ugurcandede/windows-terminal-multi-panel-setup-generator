@@ -4,4 +4,4 @@ export const LS_KEYS = {
   templates: 'wt-gen-v2-templates',
 } as const;
 
-export const SCHEMA_VERSION = 2 as const;
+export const SCHEMA_VERSION = 3 as const;

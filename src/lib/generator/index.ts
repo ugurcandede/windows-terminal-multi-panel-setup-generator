@@ -1,4 +1,4 @@
-import type { Panel } from '@/types/panel';
+import type { Tab } from '@/types/tab';
 import { generatePowershell } from './powershell';
 import { generateJSON } from './json';
 import { generateBatch } from './batch';
@@ -9,12 +9,12 @@ export { generateJSON } from './json';
 export { generateBatch } from './batch';
 export type { GeneratorOutput } from './types';
 
-export const generateAll = (panels: Panel[]): GeneratorOutput => {
-  const ps = generatePowershell(panels);
+export const generateAll = (tabs: Tab[]): GeneratorOutput => {
+  const ps = generatePowershell(tabs);
   return {
     powershellDisplay: ps.display,
     powershellClipboard: ps.clipboard,
-    json: generateJSON(panels),
-    batch: generateBatch(panels),
+    json: generateJSON(tabs),
+    batch: generateBatch(tabs),
   };
 };

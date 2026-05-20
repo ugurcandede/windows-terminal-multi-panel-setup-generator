@@ -1,20 +1,21 @@
-import type { Panel } from '@/types/panel';
+import type { Tab } from '@/types/tab';
 import { SCHEMA_VERSION } from '@/lib/storage/keys';
+import { sanitizeTabs } from '@/lib/storage/sanitizeTabs';
 import { sanitizePanels } from '@/lib/storage/sanitize';
 
-interface ExportFile {
-  version: number;
+interface ExportFileV3 {
+  version: 3;
   generator: 'windows-terminal-multi-panel-setup-generator';
   exportedAt: string;
-  panels: Panel[];
+  tabs: Tab[];
 }
 
-export const downloadConfigFile = (panels: Panel[]): void => {
-  const payload: ExportFile = {
+export const downloadConfigFile = (tabs: Tab[]): void => {
+  const payload: ExportFileV3 = {
     version: SCHEMA_VERSION,
     generator: 'windows-terminal-multi-panel-setup-generator',
     exportedAt: new Date().toISOString(),
-    panels,
+    tabs,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -27,12 +28,23 @@ export const downloadConfigFile = (panels: Panel[]): void => {
   URL.revokeObjectURL(url);
 };
 
-export const readConfigFile = async (file: File): Promise<Panel[]> => {
+export const readConfigFile = async (file: File): Promise<Tab[]> => {
   const text = await file.text();
-  const parsed = JSON.parse(text) as Partial<ExportFile> & { panels?: unknown };
-  const panels = sanitizePanels(parsed.panels);
-  if (panels.length === 0) {
-    throw new Error('No valid panels in the imported file');
+  const parsed = JSON.parse(text) as { tabs?: unknown; panels?: unknown; version?: number };
+
+  // v3 + tabs
+  if (Array.isArray(parsed.tabs)) {
+    const tabs = sanitizeTabs(parsed.tabs);
+    if (tabs.length === 0) throw new Error('No valid tabs in the imported file');
+    return tabs;
   }
-  return panels;
+
+  // v2 + panels — migrate forward into a single tab
+  if (parsed.panels !== undefined) {
+    const panels = sanitizePanels(parsed.panels);
+    if (panels.length === 0) throw new Error('No valid panels in the imported file');
+    return [{ id: 'imported', name: '', panels }];
+  }
+
+  throw new Error('Unrecognized configuration file format');
 };

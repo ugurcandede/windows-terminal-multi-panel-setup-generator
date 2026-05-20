@@ -1,4 +1,4 @@
-import { useEditorStore } from '@/store/editorStore';
+import { useActivePanels, useEditorStore } from '@/store/editorStore';
 import { useFieldIssues } from '@/hooks/useValidation';
 import { Field, baseInputClass, baseTextareaClass } from './Field';
 import { ColorPicker } from './ColorPicker';
@@ -8,7 +8,7 @@ import { ValidationHint, borderClassFor } from './ValidationHint';
 import { cn } from '@/lib/utils/cn';
 
 export function InspectorPanel() {
-  const panels = useEditorStore((s) => s.panels);
+  const panels = useActivePanels();
   const selectedId = useEditorStore((s) => s.selectedId);
   const updatePanel = useEditorStore((s) => s.updatePanel);
 
