@@ -3,6 +3,7 @@ import { TemplateDrawer } from '@/components/templates/TemplateDrawer';
 import { SaveAsTemplateDialog } from '@/components/templates/SaveAsTemplateDialog';
 import { ImportExportButtons } from '@/components/modals/ImportExportButtons';
 import { ShareUrlButton } from '@/components/output/ShareUrlButton';
+import { ValidationBadge } from './ValidationBadge';
 
 export function TopBar() {
   return (
@@ -17,6 +18,7 @@ export function TopBar() {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <ValidationBadge />
         <TemplateDrawer />
         <SaveAsTemplateDialog />
         <ImportExportButtons />
