@@ -6,4 +6,4 @@ export interface Tab {
   panels: Panel[];
 }
 
-export const MAX_TABS = 8;
+export const MAX_TABS = 5;

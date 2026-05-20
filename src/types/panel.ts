@@ -1,6 +1,6 @@
 export type SplitDirection = 'vertical' | 'horizontal';
 
-export const PROFILES = ['PowerShell', 'Command Prompt', 'Git Bash', 'Ubuntu'] as const;
+export const PROFILES = ['PowerShell', 'Command Prompt', 'Git Bash', 'WSL'] as const;
 export type Profile = (typeof PROFILES)[number];
 
 export interface Panel {
@@ -14,6 +14,6 @@ export interface Panel {
   size: number;
 }
 
-export const MAX_PANELS = 6;
+export const MAX_PANELS = 5;
 export const DEFAULT_COLOR = '#64748b';
 export const DEFAULT_SIZE = 0.5;
