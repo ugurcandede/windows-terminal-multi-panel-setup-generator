@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/Button';
 const SHORTCUTS: Array<{ keys: string[]; label: string }> = [
   { keys: ['N'], label: 'Add new panel' },
   { keys: ['Del'], label: 'Delete selected panel' },
+  { keys: ['←', '→'], label: 'Select previous / next pane' },
+  { keys: ['↑', '↓'], label: 'Switch tab' },
   { keys: ['Ctrl', 'Z'], label: 'Undo' },
   { keys: ['Ctrl', 'Shift', 'Z'], label: 'Redo' },
   { keys: ['Alt', 'E'], label: 'Export configuration' },
