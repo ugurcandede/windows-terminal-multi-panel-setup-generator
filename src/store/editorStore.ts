@@ -16,6 +16,7 @@ interface EditorState {
   // panel actions (operate on the active tab)
   addPanel: (direction?: SplitDirection) => void;
   deletePanel: (id: string) => void;
+  duplicatePanel: (id: string) => void;
   updatePanel: (id: string, patch: Partial<Panel>) => void;
   reorderPanels: (fromIndex: number, toIndex: number) => void;
   setSelected: (id: string | null) => void;
@@ -92,6 +93,25 @@ export const useEditorStore = create<EditorState>()(
             return {
               tabs: updateTab(s.tabs, s.activeTabId, (t) => ({ ...t, panels: filtered })),
               selectedId: nextSelected,
+            };
+          }),
+
+        duplicatePanel: (id) =>
+          set((s) => {
+            const panels = activePanels(s.tabs, s.activeTabId);
+            if (panels.length >= MAX_PANELS) return s;
+            const source = panels.find((p) => p.id === id);
+            if (!source) return s;
+            const copy: Panel = {
+              ...source,
+              id: nanoid(8),
+              // duplicate always lands as a split-pane (vertical) after the source
+              split: 'vertical',
+              size: DEFAULT_SIZE,
+            };
+            return {
+              tabs: updateTab(s.tabs, s.activeTabId, (t) => ({ ...t, panels: [...t.panels, copy] })),
+              selectedId: copy.id,
             };
           }),
 
