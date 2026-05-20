@@ -10,17 +10,15 @@ const GithubMark = () => (
 export function Footer() {
   return (
     <footer className="flex items-center justify-between border-t border-zinc-200 px-4 py-2 text-[11px] text-zinc-500 dark:border-zinc-800">
-      <div className="flex items-center gap-3">
-        <span>
-          v2 — MIT licensed
-        </span>
-        <span>·</span>
+      <div className="flex items-center gap-2">
         <a
           href={AUTHOR_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-zinc-900 dark:hover:text-zinc-200"
+          className="flex items-center gap-1.5 hover:text-zinc-900 dark:hover:text-zinc-200"
+          aria-label="ugurcandede on GitHub"
         >
+          <GithubMark />
           ugurcandede
         </a>
       </div>
@@ -28,10 +26,9 @@ export function Footer() {
         href={REPO_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-1.5 hover:text-zinc-900 dark:hover:text-zinc-200"
+        className="hover:text-zinc-900 dark:hover:text-zinc-200"
       >
-        <GithubMark />
-        Source
+        v2 — MIT licensed
       </a>
     </footer>
   );

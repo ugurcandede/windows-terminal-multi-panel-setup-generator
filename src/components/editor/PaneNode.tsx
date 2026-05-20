@@ -1,5 +1,6 @@
 import { useEditorStore } from '@/store/editorStore';
 import { cn } from '@/lib/utils/cn';
+import { PROFILE_BADGES } from '@/lib/data/profileBadges';
 import { PaneContextMenu } from './PaneContextMenu';
 
 interface Props {
@@ -36,6 +37,13 @@ export function PaneNode({ panelId }: Props) {
             style={{ backgroundColor: panel.color }}
           />
           <span className="truncate font-medium text-zinc-200">{title}</span>
+          <span
+            className="ml-auto shrink-0 rounded-sm px-1.5 py-0.5 text-[9px] font-mono font-semibold uppercase tracking-wider text-white/90"
+            style={{ backgroundColor: PROFILE_BADGES[panel.profile].tint }}
+            title={PROFILE_BADGES[panel.profile].label}
+          >
+            {PROFILE_BADGES[panel.profile].short}
+          </span>
         </div>
         {panel.directory && (
           <div className="mb-1 max-w-full truncate font-mono text-[10px] text-zinc-500">
