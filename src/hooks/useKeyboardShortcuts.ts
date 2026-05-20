@@ -13,46 +13,53 @@ interface Options {
   onAddPanel: () => void;
 }
 
+// Browser-safe bindings. Avoid Ctrl+N (new window — non-overridable in
+// Chrome/Firefox) and Ctrl+S (browser save-page dialog, surprises users
+// even when overridden). Single-letter keys only fire when no input has
+// focus so they never eat typed characters. Ctrl/Cmd+Z and Ctrl+Shift+Z
+// stay native inside text inputs so typing-level undo keeps working.
 export const useKeyboardShortcuts = ({ onShowShortcuts, onAddPanel }: Options) => {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const ctrl = e.ctrlKey || e.metaKey;
       const key = e.key;
+      const insideInput = isEditableElement(e.target);
 
-      // Undo / redo — work even inside input fields, but only with modifier
-      if (ctrl && !e.shiftKey && (key === 'z' || key === 'Z')) {
-        useEditorStore.temporal.getState().undo();
-        e.preventDefault();
-        return;
-      }
-      if (ctrl && e.shiftKey && (key === 'z' || key === 'Z')) {
-        useEditorStore.temporal.getState().redo();
-        e.preventDefault();
-        return;
-      }
-      if (ctrl && (key === 'y' || key === 'Y')) {
-        useEditorStore.temporal.getState().redo();
-        e.preventDefault();
-        return;
-      }
-
-      // Ctrl+N — add panel (avoid native new-window only when fields aren't focused)
-      if (ctrl && (key === 'n' || key === 'N')) {
-        if (isEditableElement(e.target)) return;
-        e.preventDefault();
-        onAddPanel();
-        return;
+      // Undo / redo — app-level only when input not focused; inside inputs
+      // the browser's native text undo takes over.
+      if (!insideInput) {
+        if (ctrl && !e.shiftKey && (key === 'z' || key === 'Z')) {
+          e.preventDefault();
+          useEditorStore.temporal.getState().undo();
+          return;
+        }
+        if (ctrl && e.shiftKey && (key === 'z' || key === 'Z')) {
+          e.preventDefault();
+          useEditorStore.temporal.getState().redo();
+          return;
+        }
       }
 
-      // Ctrl+S — export config
-      if (ctrl && (key === 's' || key === 'S')) {
+      // Alt+E — export configuration (Ctrl+S replacement; Alt+letter doesn't
+      // collide with default browser actions on Win/Mac/Linux).
+      if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && (key === 'e' || key === 'E')) {
         e.preventDefault();
         downloadConfigFile(useEditorStore.getState().panels);
         return;
       }
 
-      // Delete focused panel (only when not typing)
-      if ((key === 'Delete' || key === 'Backspace') && !isEditableElement(e.target)) {
+      // Single-letter shortcuts only fire when not typing.
+      if (insideInput) return;
+
+      // `n` — add new panel
+      if (!ctrl && !e.altKey && !e.shiftKey && (key === 'n' || key === 'N')) {
+        e.preventDefault();
+        onAddPanel();
+        return;
+      }
+
+      // Delete selected panel
+      if (key === 'Delete' || key === 'Backspace') {
         const { selectedId, deletePanel } = useEditorStore.getState();
         if (selectedId) {
           e.preventDefault();
@@ -61,8 +68,8 @@ export const useKeyboardShortcuts = ({ onShowShortcuts, onAddPanel }: Options) =
         return;
       }
 
-      // ? — show shortcuts (only when not typing)
-      if (key === '?' && !isEditableElement(e.target)) {
+      // ? — show shortcuts dialog
+      if (key === '?') {
         e.preventDefault();
         onShowShortcuts();
         return;
