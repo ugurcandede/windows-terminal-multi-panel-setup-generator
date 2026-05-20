@@ -79,7 +79,11 @@ export function InspectorPanel() {
       </Field>
 
       <Field label="Profile">
-        <ProfileSelect value={selected.profile} onChange={(p) => updatePanel(selected.id, { profile: p })} />
+        <ProfileSelect
+          value={selected.profile}
+          onChange={(p) => updatePanel(selected.id, { profile: p })}
+          commands={selected.commands}
+        />
       </Field>
 
       <Field label="Tab color">
