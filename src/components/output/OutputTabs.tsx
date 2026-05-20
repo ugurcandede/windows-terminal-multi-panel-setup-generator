@@ -4,6 +4,7 @@ import { generateAll } from '@/lib/generator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { CopyButton } from './CopyButton';
 import { CodeBlock } from './CodeBlock';
+import { RunInWtButton } from './RunInWtButton';
 
 export function OutputTabs() {
   const tabs = useEditorStore((s) => s.tabs);
@@ -21,8 +22,9 @@ export function OutputTabs() {
         </div>
 
         <TabsContent value="powershell" className="relative flex-1 overflow-hidden">
-          <div className="absolute right-4 top-2 z-10">
+          <div className="absolute right-4 top-2 z-10 flex items-center gap-2">
             <CopyButton text={output.powershellClipboard} label="Copy single-line" />
+            <RunInWtButton command={output.powershellClipboard} />
           </div>
           <CodeBlock code={output.powershellDisplay} language="powershell" />
         </TabsContent>
