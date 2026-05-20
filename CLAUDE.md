@@ -4,54 +4,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project type
 
-Pure static site — HTML + CSS + vanilla JS. No `package.json`, no build step, no test framework, no linter. All third-party libraries (Tailwind, Font Awesome, Prism, SortableJS) load from CDNs in `index.html`.
+Vite + React 18 + TypeScript SPA, deployed to GitHub Pages from `dist/`. Tailwind v4 (CSS-first via `@theme` in `src/index.css`). No backend.
 
-## Running locally
+## Commands
 
-```powershell
-npx serve .
+```bash
+npm run dev          # Vite dev server
+npm run build        # tsc -b && vite build
+npm run preview      # serve dist locally
+npm test             # vitest run
+npm run typecheck    # tsc --noEmit
 ```
 
-Opening `index.html` directly via `file://` works for most things but `localStorage` and URL-share features behave more reliably when served over HTTP.
-
-## Deployment
-
-`.github/workflows/pages.yml` deploys to GitHub Pages on every push to `master`. PRs build but do not deploy. There is no preview environment.
+`npm run build` is the gate the GitHub Actions workflow uses; both typecheck and tests must pass first (see `.github/workflows/pages.yml`).
 
 ## Architecture
 
-Four ES6 classes are instantiated as globals on `window` (`templateManager`, `storageManager`, `commandGenerator`, `panelManager`) by their respective files, then `app.js` orchestrates them. Script load order in `index.html` is significant — `app.js` must come last:
+### Layering (one-way dependency: ui → store → lib)
 
-1. `templates.js` → `TemplateManager` — hard-coded preset panel configurations.
-2. `storage.js` → `StorageManager` — localStorage persistence, JSON import/export, URL-param share encoding.
-3. `generator.js` → `CommandGenerator` — produces the three output formats.
-4. `panels.js` → `PanelManager` — renders/edits the panel cards, owns the canonical `panels` array, dispatches `panelsChanged`.
-5. `app.js` → `WindowsTerminalGenerator` — top-level controller, theme, keyboard shortcuts, toasts.
+- `src/lib/` — pure TypeScript. No React, no DOM. Tested directly by Vitest. The generator (`lib/generator/*`) and validators (`lib/validation/*`) live here.
+- `src/store/` — Zustand stores. Talk to `lib/` and own all mutable state.
+- `src/hooks/` — React-only glue: subscribes to stores, applies side effects (theme class on `<html>`, autosave to localStorage, etc.).
+- `src/components/` — purely render layer. Pull from stores via hooks; no direct LS / fetch / window writes.
 
-Inter-module communication is through a single custom DOM event: `panelManager` fires `document.dispatchEvent(new Event('panelsChanged'))` and `app.js` listens for it to refresh the output panel and the shareable URL. Don't add direct cross-class calls when the event suffices.
+If a feature can be tested without a DOM, it belongs in `lib/`.
 
-### Output format quirk
+### Editor state (zundo)
 
-PowerShell output has **two** generators that must stay in sync:
+`editorStore` is wrapped with `temporal` and partialized to `{ panels }`. Selected pane, modal visibility, and other transient UI state stay out of the history — otherwise opening a dialog would get caught by an undo. The 50-step `limit` is hardcoded in the store.
 
-- `generatePowerShellCommandForDisplay()` — multi-line, used for the on-screen preview.
-- `generatePowerShellCommandForClipboard()` — single-line, used by the Copy button.
+### Layout tree
 
-`app.copyCurrentOutput()` (`app.js`) intentionally bypasses the DOM and re-generates the clipboard variant from the panel data. Editing only one of the two will cause display/clipboard to drift.
+Panels are stored as a flat array. `src/components/editor/useLayoutTree.ts` derives a binary tree at render time:
 
-### Panel model
+- `panels[0]` is the root leaf (the `new-tab`).
+- Every later panel wraps the current "last leaf" in a split node whose `children[1]` is always the new leaf. That invariant is what lets `LayoutCanvas` map an rrp `onLayout(sizes)` callback straight to `resizePane(node.panelId, sizes[1] / 100)`.
 
-The shape stored in `panels[]` and persisted to localStorage:
+There is a deliberate naming inversion documented inside `useLayoutTree.ts`: wt `split-pane -V` (panes side by side) corresponds to `react-resizable-panels` `direction="horizontal"` (panels laid out horizontally). When touching either side, keep the comment in sync — this is the project's #1 bug magnet.
 
-```js
-{ title, directory, commands, color, profile, split, size }
-```
+### Generator (display ↔ clipboard parity)
 
-`split` is `null` for the first panel (it becomes `wt new-tab`); subsequent panels use `"vertical"` or `"horizontal"` (rendered as `split-pane -V|-H`). `size` is a fraction 0.1–0.9. Max 6 panels (`PanelManager.maxPanels`).
+`lib/generator/powershell.ts` exposes a single function that returns both `display` (multi-line, with backtick line continuations) and `clipboard` (single-line). They share the same token builder, so they cannot drift — this was a recurring bug in the v1 codebase that the parity test in `tests/generator/powershell.test.ts` now guards.
 
-## When making changes
+Magic defaults are intentional and load-bearing:
 
-- Match existing style — vanilla JS classes, no modules, no TypeScript, no framework.
-- Don't introduce a build step or `package.json` unless the user explicitly asks; the static-deploy workflow assumes the repo root is directly servable.
-- When changing PowerShell output, update both display and clipboard generators in `generator.js`.
-- When adding a new panel field, it must round-trip through `StorageManager.sanitizePanels`/`validateConfiguration` and the URL-share encoder, or it will be silently dropped on reload.
+- `color === '#64748b'` → omit `--tabColor`.
+- `size === 0.5` on a split panel → omit `--size`.
+- `commands.trim() === ''` → omit `-Command` (an empty `-Command ""` is a syntax error in `pwsh`).
+
+### Storage versioning
+
+Local storage uses `wt-gen-v2-*` keys. There is no migration from v1; v1 data is left in place but not read. If you change the on-disk shape, bump `SCHEMA_VERSION` in `src/lib/storage/keys.ts` — `loadConfig` and friends ignore payloads with a mismatched version, so users will silently get a fresh default rather than a crashed app.
+
+### Validation vs sanitization
+
+These are distinct:
+
+- `lib/storage/sanitize.ts` is for *machine-trusted-but-shape-shaky* input (LS, share URL, import JSON). It coerces values to a valid `Panel` (clamps size, defaults color/profile/split). Never throws.
+- `lib/validation/` is for *user-facing* feedback. It returns `Issue[]` with errors and warnings. The UI uses it for inline borders and the topbar badge; it does not block output generation.
+
+### GitHub Pages base path
+
+`vite.config.ts` sets `base: '/windows-terminal-multi-panel-setup-generator/'`. All asset references must go through Vite's import pipeline or `import.meta.env.BASE_URL` — absolute `/favicon.svg`-style hrefs will 404 in production.
+
+If you fork to a different repo, change `base` to match the new slug.
+
+## When changing things
+
+- Touching the generator? Add a vitest case under `tests/generator/`. The escape rules and magic defaults all have explicit coverage; preserve it.
+- Adding a panel field? Update three things in lockstep: `types/panel.ts`, `lib/storage/sanitize.ts` (so LS + URL share + file import round-trip), and `lib/share/urlShare.ts` compactPanel/expandPanel (otherwise the field silently disappears through shared URLs).
+- Adding a Radix primitive? Wrap it under `src/components/ui/` and re-export — never use `@radix-ui/*` directly from feature components, so the Tailwind class composition stays consistent.
+- Bundle is currently around 160KB gzipped. `prism-react-renderer` is the biggest chunk; if you replace it, keep the theme-swap behavior (`useResolvedTheme` → dracula/vsLight) intact.
+
+## Things to avoid
+
+- Don't re-introduce two parallel PowerShell generators (display + clipboard). One token builder, two render passes.
+- Don't subscribe to `editorStore` outside `src/store` and `src/hooks`. Components should read via the existing hooks/selectors so we keep the dependency direction one-way.
+- Don't add a build step on top of Vite (PostCSS configs, custom Babel). Tailwind v4 is configured CSS-first via `@theme` in `src/index.css`; everything else is Vite defaults.
