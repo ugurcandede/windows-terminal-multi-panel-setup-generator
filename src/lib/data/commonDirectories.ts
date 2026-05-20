@@ -1,0 +1,17 @@
+export const COMMON_DIRECTORIES: readonly string[] = [
+  'C:\\',
+  'C:\\Projects',
+  'C:\\Projects\\frontend',
+  'C:\\Projects\\backend',
+  'C:\\Projects\\logs',
+  'C:\\Users\\%USERNAME%',
+  'C:\\Users\\%USERNAME%\\Desktop',
+  'C:\\Users\\%USERNAME%\\Documents',
+  'D:\\',
+  'D:\\Projects',
+  'D:\\MyProjects',
+  'D:\\Workspace',
+  'E:\\Projects',
+  '.\\',
+  '..\\',
+];

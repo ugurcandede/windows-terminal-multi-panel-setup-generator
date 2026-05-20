@@ -9,6 +9,7 @@ dist/
 build/
 .tmp/
 .cache/
+*.tsbuildinfo
 
 # Environment files
 .env
