@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-accent: #3b82f6;
+  --color-accent-fg: #ffffff;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius-card: 0.75rem;
+}
+
+:root {
+  --accent: #3b82f6;
+  --accent-fg: #ffffff;
+  color-scheme: light dark;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: oklch(0.98 0 0);
+  color: oklch(0.15 0 0);
+}
+
+html.dark body {
+  background: oklch(0.18 0.01 250);
+  color: oklch(0.95 0 0);
+}
