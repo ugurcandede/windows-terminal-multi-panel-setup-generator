@@ -10,10 +10,14 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useActivePanels, useEditorStore } from '@/store/editorStore';
 import { MAX_PANELS } from '@/types/panel';
 import { Button } from '@/components/ui/Button';
-import { Plus } from 'lucide-react';
+import { ChevronLeft, Plus } from 'lucide-react';
 import { PanelListItem } from './PanelListItem';
 
-export function PanelList() {
+interface Props {
+  onCollapse?: () => void;
+}
+
+export function PanelList({ onCollapse }: Props) {
   const panels = useActivePanels();
   const addPanel = useEditorStore((s) => s.addPanel);
   const reorderPanels = useEditorStore((s) => s.reorderPanels);
@@ -37,6 +41,17 @@ export function PanelList() {
         <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
           Panels ({panels.length}/{MAX_PANELS})
         </h2>
+        {onCollapse && (
+          <button
+            type="button"
+            onClick={onCollapse}
+            aria-label="Collapse panels"
+            title="Collapse panels"
+            className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

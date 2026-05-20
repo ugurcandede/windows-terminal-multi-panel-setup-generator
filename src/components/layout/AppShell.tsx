@@ -11,7 +11,6 @@ import { ShortcutsDialog } from '@/components/modals/ShortcutsDialog';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useEditorStore } from '@/store/editorStore';
 import { useSettingsStore } from '@/store/settingsStore';
-import { cn } from '@/lib/utils/cn';
 
 const RAIL_W_OPEN = 260;
 const RAIL_W_CLOSED = 32;
@@ -49,14 +48,12 @@ export function AppShell() {
           gridTemplateColumns: `${railWidth}px 1fr ${inspectorWidth}px`,
         }}
       >
-        <aside className="relative border-r border-zinc-200 dark:border-zinc-800">
-          <CollapseTab
-            side="left"
-            collapsed={railCollapsed}
-            onToggle={toggleRail}
-            label="Panels"
-          />
-          {!railCollapsed && <PanelList />}
+        <aside className="border-r border-zinc-200 dark:border-zinc-800">
+          {railCollapsed ? (
+            <CollapsedStub side="left" onToggle={toggleRail} label="Panels" />
+          ) : (
+            <PanelList onCollapse={toggleRail} />
+          )}
         </aside>
 
         <main className="flex flex-col overflow-hidden">
@@ -81,14 +78,12 @@ export function AppShell() {
           </div>
         </main>
 
-        <aside className="relative border-l border-zinc-200 dark:border-zinc-800">
-          <CollapseTab
-            side="right"
-            collapsed={inspectorCollapsed}
-            onToggle={toggleInspector}
-            label="Inspector"
-          />
-          {!inspectorCollapsed && <InspectorPanel />}
+        <aside className="border-l border-zinc-200 dark:border-zinc-800">
+          {inspectorCollapsed ? (
+            <CollapsedStub side="right" onToggle={toggleInspector} label="Inspector" />
+          ) : (
+            <InspectorPanel onCollapse={toggleInspector} />
+          )}
         </aside>
       </div>
       <Footer />
@@ -97,34 +92,29 @@ export function AppShell() {
   );
 }
 
-interface CollapseTabProps {
+interface CollapsedStubProps {
   side: 'left' | 'right';
-  collapsed: boolean;
   onToggle: () => void;
   label: string;
 }
 
-function CollapseTab({ side, collapsed, onToggle, label }: CollapseTabProps) {
-  const isLeft = side === 'left';
-  // Show the chevron pointing INTO the panel when expanded, OUT when collapsed.
-  const Chevron = (isLeft ? collapsed : !collapsed) ? ChevronRight : ChevronLeft;
+function CollapsedStub({ side, onToggle, label }: CollapsedStubProps) {
+  // When the side panel is collapsed, expose just a single chevron in the
+  // narrow strip — pointing back towards the content so the user knows the
+  // panel will fly out from this edge.
+  const Chevron = side === 'left' ? ChevronRight : ChevronLeft;
   return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-label={collapsed ? `Expand ${label}` : `Collapse ${label}`}
-      title={collapsed ? `Expand ${label}` : `Collapse ${label}`}
-      className={cn(
-        'absolute top-2 z-10 flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors',
-        'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-200',
-        isLeft ? 'right-1' : 'left-1'
-      )}
-    >
-      <Chevron className="h-3.5 w-3.5" />
-      {collapsed && (
-        <span className="sr-only">{label}</span>
-      )}
-    </button>
+    <div className="flex h-full justify-center pt-2">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label={`Expand ${label}`}
+        title={`Expand ${label}`}
+        className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+      >
+        <Chevron className="h-3.5 w-3.5" />
+      </button>
+    </div>
   );
 }
 
