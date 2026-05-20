@@ -1,4 +1,8 @@
 import { Terminal } from 'lucide-react';
+import { TemplateDrawer } from '@/components/templates/TemplateDrawer';
+import { SaveAsTemplateDialog } from '@/components/templates/SaveAsTemplateDialog';
+import { ImportExportButtons } from '@/components/modals/ImportExportButtons';
+import { ShareUrlButton } from '@/components/output/ShareUrlButton';
 
 export function TopBar() {
   return (
@@ -11,6 +15,12 @@ export function TopBar() {
           <div className="text-sm font-semibold">Windows Terminal Generator</div>
           <div className="text-[11px] text-zinc-500">Multi-pane setup designer</div>
         </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <TemplateDrawer />
+        <SaveAsTemplateDialog />
+        <ImportExportButtons />
+        <ShareUrlButton />
       </div>
     </header>
   );
