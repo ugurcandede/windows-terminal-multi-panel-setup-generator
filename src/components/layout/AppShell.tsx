@@ -1,6 +1,6 @@
 import { TopBar } from './TopBar';
 import { PanelList } from '@/components/panels-rail/PanelList';
-import { StaticPreview } from '@/components/editor/StaticPreview';
+import { LayoutCanvas } from '@/components/editor/LayoutCanvas';
 import { InspectorPanel } from '@/components/inspector/InspectorPanel';
 import { OutputTabs } from '@/components/output/OutputTabs';
 
@@ -14,7 +14,7 @@ export function AppShell() {
         </aside>
         <main className="flex flex-col overflow-hidden">
           <div className="flex-1 overflow-hidden">
-            <StaticPreview />
+            <LayoutCanvas />
           </div>
           <div className="h-[280px] overflow-hidden">
             <OutputTabs />
