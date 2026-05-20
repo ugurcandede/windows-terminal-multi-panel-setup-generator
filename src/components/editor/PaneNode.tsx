@@ -1,4 +1,4 @@
-import { useEditorStore } from '@/store/editorStore';
+import { useActivePanels, useEditorStore } from '@/store/editorStore';
 import { cn } from '@/lib/utils/cn';
 import { PROFILE_BADGES } from '@/lib/data/profileBadges';
 import { PaneContextMenu } from './PaneContextMenu';
@@ -8,7 +8,8 @@ interface Props {
 }
 
 export function PaneNode({ panelId }: Props) {
-  const panel = useEditorStore((s) => s.panels.find((p) => p.id === panelId));
+  const panels = useActivePanels();
+  const panel = panels.find((p) => p.id === panelId);
   const selectedId = useEditorStore((s) => s.selectedId);
   const setSelected = useEditorStore((s) => s.setSelected);
 

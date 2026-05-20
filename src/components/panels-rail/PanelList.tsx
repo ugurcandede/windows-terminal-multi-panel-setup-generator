@@ -7,14 +7,14 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useEditorStore } from '@/store/editorStore';
+import { useActivePanels, useEditorStore } from '@/store/editorStore';
 import { MAX_PANELS } from '@/types/panel';
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { PanelListItem } from './PanelListItem';
 
 export function PanelList() {
-  const panels = useEditorStore((s) => s.panels);
+  const panels = useActivePanels();
   const addPanel = useEditorStore((s) => s.addPanel);
   const reorderPanels = useEditorStore((s) => s.reorderPanels);
 
@@ -51,7 +51,7 @@ export function PanelList() {
 
       <Button
         variant="outline"
-        onClick={addPanel}
+        onClick={() => addPanel()}
         disabled={panels.length >= MAX_PANELS}
         className="mt-2 w-full"
       >

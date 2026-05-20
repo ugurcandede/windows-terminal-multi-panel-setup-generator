@@ -1,18 +1,25 @@
 import type { Panel } from '@/types/panel';
+import type { Tab } from '@/types/tab';
 import { sanitizePanels } from '@/lib/storage/sanitize';
+import { sanitizeTabs } from '@/lib/storage/sanitizeTabs';
 
-// Compress field names to keep URLs short. Values stay as-is (already small).
+// Compact field names to keep URLs short.
 interface CompactPanel {
-  t: string;
-  d: string;
-  c: string;
-  cl: string;
-  p: string;
-  s: string | null;
-  sz: number;
+  t: string;  // title
+  d: string;  // directory
+  c: string;  // commands
+  cl: string; // color
+  p: string;  // profile
+  s: string | null; // split
+  sz: number; // size
 }
 
-const SHARE_VERSION = '2';
+interface CompactTab {
+  n: string;          // name
+  p: CompactPanel[];  // panels
+}
+
+const SHARE_VERSION = '3';
 
 const compactPanel = (p: Panel): CompactPanel => ({
   t: p.title,
@@ -34,6 +41,11 @@ const expandPanel = (c: CompactPanel): Partial<Panel> => ({
   size: c.sz,
 });
 
+const compactTab = (t: Tab): CompactTab => ({
+  n: t.name,
+  p: t.panels.map(compactPanel),
+});
+
 // btoa works with ASCII; use TextEncoder→base64 for unicode safety.
 const toBase64Url = (s: string): string => {
   const bytes = new TextEncoder().encode(s);
@@ -50,37 +62,55 @@ const fromBase64Url = (s: string): string => {
   return new TextDecoder().decode(bytes);
 };
 
-export const encodePanelsToParam = (panels: Panel[]): string =>
-  toBase64Url(JSON.stringify(panels.map(compactPanel)));
+export const encodeTabsToParam = (tabs: Tab[]): string =>
+  toBase64Url(JSON.stringify(tabs.map(compactTab)));
 
-export const decodePanelsFromParam = (param: string): Panel[] | null => {
+export const decodeTabsFromParam = (param: string): Tab[] | null => {
   try {
     const json = fromBase64Url(param);
-    const raw = JSON.parse(json) as CompactPanel[];
+    const raw = JSON.parse(json) as CompactTab[];
     if (!Array.isArray(raw)) return null;
-    const expanded = raw.map(expandPanel);
-    const sanitized = sanitizePanels(expanded);
-    return sanitized.length > 0 ? sanitized : null;
+    const expanded = raw.map((t) => ({
+      name: typeof t.n === 'string' ? t.n : '',
+      panels: Array.isArray(t.p) ? t.p.map(expandPanel) : [],
+    }));
+    return sanitizeTabs(expanded);
   } catch {
     return null;
   }
 };
 
-export const buildShareUrl = (panels: Panel[]): string => {
-  const param = encodePanelsToParam(panels);
+// v2 compatibility: panels-only share URLs.
+const decodeLegacyPanels = (param: string): Tab[] | null => {
+  try {
+    const json = fromBase64Url(param);
+    const raw = JSON.parse(json) as CompactPanel[];
+    if (!Array.isArray(raw)) return null;
+    const panels = sanitizePanels(raw.map(expandPanel));
+    if (panels.length === 0) return null;
+    return [{ id: 'legacy', name: '', panels }];
+  } catch {
+    return null;
+  }
+};
+
+export const buildShareUrl = (tabs: Tab[]): string => {
+  const param = encodeTabsToParam(tabs);
   const url = new URL(window.location.href);
   url.searchParams.set('v', SHARE_VERSION);
   url.searchParams.set('p', param);
   return url.toString();
 };
 
-export const readPanelsFromUrl = (): Panel[] | null => {
+export const readTabsFromUrl = (): Tab[] | null => {
   if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
-  if (params.get('v') !== SHARE_VERSION) return null;
+  const version = params.get('v');
   const p = params.get('p');
   if (!p) return null;
-  return decodePanelsFromParam(p);
+  if (version === SHARE_VERSION) return decodeTabsFromParam(p);
+  if (version === '2') return decodeLegacyPanels(p);
+  return null;
 };
 
 export const replaceUrlWithoutShareParams = (): void => {

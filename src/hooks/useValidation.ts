@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useEditorStore } from '@/store/editorStore';
+import { useActivePanels } from '@/store/editorStore';
 import { validatePanel } from '@/lib/validation/panel';
 import type { Issue, IssueField } from '@/lib/validation/types';
 
@@ -10,7 +10,7 @@ export interface ValidationSnapshot {
 }
 
 export const useValidation = (): ValidationSnapshot => {
-  const panels = useEditorStore((s) => s.panels);
+  const panels = useActivePanels();
 
   return useMemo(() => {
     const byPanel: Record<string, Issue[]> = {};
