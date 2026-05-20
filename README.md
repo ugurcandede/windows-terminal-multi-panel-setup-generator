@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="public/favicon.svg" alt="roadie" width="100" height="100">
   <h1>Windows Terminal Multi-Panel Setup Generator</h1>
   <p>Visual editor for Windows Terminal multi-pane setups — drag splitters, edit panes, export as PowerShell, settings.json action, or batch.</p>
   <br>
@@ -137,13 +138,18 @@ wt new-tab --title "Frontend" --suppressApplicationTitle --startingDirectory "D:
 
 ## Keyboard shortcuts
 
+Single-letter shortcuts (`N`, `Del`, `?`) only fire when no text field is
+focused — so they never eat characters you're typing. `Ctrl+Z` stays
+native inside inputs (text-level undo). `Ctrl+N` and `Ctrl+S` are
+intentionally avoided: browsers don't reliably let pages override them.
+
 | Keys | Action |
 |---|---|
-| `Ctrl + N` | Add new panel |
+| `N` | Add new panel |
 | `Del` | Delete selected panel |
-| `Ctrl + Z` | Undo |
-| `Ctrl + Shift + Z` / `Ctrl + Y` | Redo |
-| `Ctrl + S` | Export configuration as JSON |
+| `Ctrl + Z` | Undo (app-level, outside inputs) |
+| `Ctrl + Shift + Z` | Redo (app-level, outside inputs) |
+| `Alt + E` | Export configuration as JSON |
 | `?` | Show shortcuts dialog |
 | `Esc` | Close dialog |
 
