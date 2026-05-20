@@ -10,6 +10,9 @@ export interface AppSettings {
   defaultProfile: Profile;
   defaultDirectory: string;
   autoSave: boolean;
+  railCollapsed: boolean;
+  outputCollapsed: boolean;
+  inspectorCollapsed: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -18,6 +21,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   defaultProfile: 'PowerShell',
   defaultDirectory: 'C:\\',
   autoSave: true,
+  railCollapsed: false,
+  outputCollapsed: false,
+  inspectorCollapsed: false,
 };
 
 interface StoredSettings {
