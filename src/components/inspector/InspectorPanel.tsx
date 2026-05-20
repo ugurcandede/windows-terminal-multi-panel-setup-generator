@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react';
 import { useActivePanels, useEditorStore } from '@/store/editorStore';
 import { useFieldIssues } from '@/hooks/useValidation';
 import { Field, baseInputClass, baseTextareaClass } from './Field';
@@ -7,7 +8,11 @@ import { SplitControls } from './SplitControls';
 import { ValidationHint, borderClassFor } from './ValidationHint';
 import { cn } from '@/lib/utils/cn';
 
-export function InspectorPanel() {
+interface Props {
+  onCollapse?: () => void;
+}
+
+export function InspectorPanel({ onCollapse }: Props = {}) {
   const panels = useActivePanels();
   const selectedId = useEditorStore((s) => s.selectedId);
   const updatePanel = useEditorStore((s) => s.updatePanel);
@@ -23,12 +28,31 @@ export function InspectorPanel() {
   const splitIssues = useFieldIssues(selected?.id ?? null, 'split');
   const sizeIssues = useFieldIssues(selected?.id ?? null, 'size');
 
+  const collapseButton = onCollapse ? (
+    <button
+      type="button"
+      onClick={onCollapse}
+      aria-label="Collapse inspector"
+      title="Collapse inspector"
+      className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+    >
+      <ChevronRight className="h-3.5 w-3.5" />
+    </button>
+  ) : null;
+
   if (!selected) {
     return (
-      <div className="flex h-full items-center justify-center p-6 text-center text-sm text-zinc-500">
-        <div>
-          <p className="mb-1 font-medium">No panel selected</p>
-          <p className="text-xs">Pick a panel from the left rail or click one in the preview.</p>
+      <div className="flex h-full flex-col">
+        {collapseButton && (
+          <div className="flex items-center justify-end border-b border-zinc-200 px-2 py-1.5 dark:border-zinc-800">
+            {collapseButton}
+          </div>
+        )}
+        <div className="flex flex-1 items-center justify-center p-6 text-center text-sm text-zinc-500">
+          <div>
+            <p className="mb-1 font-medium">No panel selected</p>
+            <p className="text-xs">Pick a panel from the left rail or click one in the preview.</p>
+          </div>
         </div>
       </div>
     );
@@ -36,11 +60,12 @@ export function InspectorPanel() {
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
+      <div className="flex items-center gap-2">
+        <h2 className="flex-1 text-sm font-semibold uppercase tracking-wider text-zinc-500">
           Panel {index + 1}
         </h2>
         <span className="text-xs text-zinc-500">{isFirst ? 'new-tab' : 'split-pane'}</span>
+        {collapseButton}
       </div>
 
       <Field label="Title" htmlFor={`title-${selected.id}`}>
