@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { useValidation } from '@/hooks/useValidation';
@@ -15,10 +16,38 @@ const fieldLabel: Record<string, string> = {
   global: '',
 };
 
+const HOVER_OPEN_DELAY = 80;
+const HOVER_CLOSE_DELAY = 180;
+
 export function ValidationBadge() {
   const snap = useValidation();
   const panels = useActivePanels();
   const setSelected = useEditorStore((s) => s.setSelected);
+
+  const [open, setOpen] = useState(false);
+  const openTimer = useRef<number | null>(null);
+  const closeTimer = useRef<number | null>(null);
+
+  const clearTimers = () => {
+    if (openTimer.current !== null) {
+      window.clearTimeout(openTimer.current);
+      openTimer.current = null;
+    }
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const scheduleOpen = () => {
+    clearTimers();
+    openTimer.current = window.setTimeout(() => setOpen(true), HOVER_OPEN_DELAY);
+  };
+
+  const scheduleClose = () => {
+    clearTimers();
+    closeTimer.current = window.setTimeout(() => setOpen(false), HOVER_CLOSE_DELAY);
+  };
 
   const { errorCount, warningCount, byPanel } = snap;
   const isClean = errorCount === 0 && warningCount === 0;
@@ -40,11 +69,21 @@ export function ValidationBadge() {
     .filter((entry) => entry.issues.length > 0);
 
   return (
-    <Popover>
+    <Popover
+      open={open}
+      onOpenChange={(v) => {
+        clearTimers();
+        setOpen(v);
+      }}
+    >
       <PopoverTrigger asChild>
         <button
           type="button"
           aria-label="Show validation issues"
+          onMouseEnter={scheduleOpen}
+          onMouseLeave={scheduleClose}
+          onFocus={scheduleOpen}
+          onBlur={scheduleClose}
           className="flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1 text-xs transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
         >
           {errorCount > 0 && (
@@ -62,7 +101,11 @@ export function ValidationBadge() {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent>
+      <PopoverContent
+        onMouseEnter={clearTimers}
+        onMouseLeave={scheduleClose}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <div className="mb-2 flex items-center justify-between text-xs">
           <span className="font-semibold text-zinc-700 dark:text-zinc-300">Validation issues</span>
           <span className="text-zinc-500">
@@ -83,7 +126,11 @@ export function ValidationBadge() {
               <li key={panel.id}>
                 <button
                   type="button"
-                  onClick={() => setSelected(panel.id)}
+                  onClick={() => {
+                    setSelected(panel.id);
+                    clearTimers();
+                    setOpen(false);
+                  }}
                   className="mb-1 flex items-center gap-2 text-left text-xs font-medium text-zinc-800 hover:text-[var(--accent)] dark:text-zinc-200"
                 >
                   <span
