@@ -4,7 +4,7 @@ export const PROFILE_MAP: Record<Profile, string> = {
   PowerShell: 'pwsh',
   'Command Prompt': 'cmd',
   'Git Bash': 'bash',
-  Ubuntu: 'wsl -d Ubuntu',
+  WSL: 'wsl -d Ubuntu',
 };
 
 export const getProfileCommand = (profile: Profile): string =>

@@ -79,7 +79,7 @@ describe('generatePowershell', () => {
     expect(generatePowershell(singleTab([makePanel({ profile: 'PowerShell' })])).clipboard).toContain(' pwsh');
     expect(generatePowershell(singleTab([makePanel({ profile: 'Command Prompt' })])).clipboard).toContain(' cmd');
     expect(generatePowershell(singleTab([makePanel({ profile: 'Git Bash' })])).clipboard).toContain(' bash');
-    expect(generatePowershell(singleTab([makePanel({ profile: 'Ubuntu' })])).clipboard).toContain(' wsl -d Ubuntu');
+    expect(generatePowershell(singleTab([makePanel({ profile: 'WSL' })])).clipboard).toContain(' wsl -d Ubuntu');
   });
 
   it('every --title is followed by --suppressApplicationTitle', () => {
