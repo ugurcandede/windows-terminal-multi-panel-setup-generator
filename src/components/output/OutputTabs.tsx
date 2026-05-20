@@ -3,10 +3,10 @@ import { useEditorStore } from '@/store/editorStore';
 import { generateAll } from '@/lib/generator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { CopyButton } from './CopyButton';
+import { CodeBlock } from './CodeBlock';
 
 export function OutputTabs() {
   const panels = useEditorStore((s) => s.panels);
-
   const output = useMemo(() => generateAll(panels), [panels]);
 
   return (
@@ -24,27 +24,21 @@ export function OutputTabs() {
           <div className="absolute right-4 top-2 z-10">
             <CopyButton text={output.powershellClipboard} label="Copy single-line" />
           </div>
-          <pre className="h-full overflow-auto bg-zinc-950 p-4 pt-12 font-mono text-xs leading-relaxed text-zinc-100">
-            {output.powershellDisplay}
-          </pre>
+          <CodeBlock code={output.powershellDisplay} language="powershell" />
         </TabsContent>
 
         <TabsContent value="json" className="relative flex-1 overflow-hidden">
           <div className="absolute right-4 top-2 z-10">
             <CopyButton text={output.json} />
           </div>
-          <pre className="h-full overflow-auto bg-zinc-950 p-4 pt-12 font-mono text-xs leading-relaxed text-zinc-100">
-            {output.json}
-          </pre>
+          <CodeBlock code={output.json} language="json" />
         </TabsContent>
 
         <TabsContent value="batch" className="relative flex-1 overflow-hidden">
           <div className="absolute right-4 top-2 z-10">
             <CopyButton text={output.batch} />
           </div>
-          <pre className="h-full overflow-auto bg-zinc-950 p-4 pt-12 font-mono text-xs leading-relaxed text-zinc-100">
-            {output.batch}
-          </pre>
+          <CodeBlock code={output.batch} language="batch" />
         </TabsContent>
       </Tabs>
     </div>
