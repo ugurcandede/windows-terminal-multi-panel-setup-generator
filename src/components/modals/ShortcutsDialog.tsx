@@ -5,16 +5,15 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
 
 const SHORTCUTS: Array<{ keys: string[]; label: string }> = [
-  { keys: ['Ctrl', 'N'], label: 'Add new panel' },
+  { keys: ['N'], label: 'Add new panel' },
   { keys: ['Del'], label: 'Delete selected panel' },
   { keys: ['Ctrl', 'Z'], label: 'Undo' },
   { keys: ['Ctrl', 'Shift', 'Z'], label: 'Redo' },
-  { keys: ['Ctrl', 'S'], label: 'Export configuration' },
+  { keys: ['Alt', 'E'], label: 'Export configuration' },
   { keys: ['?'], label: 'Show this dialog' },
   { keys: ['Esc'], label: 'Close dialog' },
 ];
@@ -34,7 +33,8 @@ export function ShortcutsDialog({ open, onOpenChange }: Props) {
             Keyboard shortcuts
           </DialogTitle>
           <DialogDescription>
-            Editor shortcuts work everywhere; per-panel shortcuts (Delete, ?) require focus outside text fields.
+            Single-letter shortcuts only fire when no text field is focused — so they never eat
+            characters you're typing. Ctrl+Z stays native inside inputs.
           </DialogDescription>
         </DialogHeader>
         <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -66,5 +66,3 @@ export function ShortcutsTriggerButton({ onClick }: { onClick: () => void }) {
     </Button>
   );
 }
-
-export { Dialog as ShortcutsTrigger, DialogTrigger };
