@@ -9,6 +9,9 @@ interface SettingsState extends AppSettings {
   setDefaultProfile: (p: Profile) => void;
   setDefaultDirectory: (d: string) => void;
   setAutoSave: (enabled: boolean) => void;
+  toggleRail: () => void;
+  toggleOutput: () => void;
+  toggleInspector: () => void;
 }
 
 const initial = (): AppSettings =>
@@ -36,5 +39,20 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   setAutoSave: (autoSave) => {
     set({ autoSave });
     saveSettings({ ...get(), autoSave });
+  },
+  toggleRail: () => {
+    const next = !get().railCollapsed;
+    set({ railCollapsed: next });
+    saveSettings({ ...get(), railCollapsed: next });
+  },
+  toggleOutput: () => {
+    const next = !get().outputCollapsed;
+    set({ outputCollapsed: next });
+    saveSettings({ ...get(), outputCollapsed: next });
+  },
+  toggleInspector: () => {
+    const next = !get().inspectorCollapsed;
+    set({ inspectorCollapsed: next });
+    saveSettings({ ...get(), inspectorCollapsed: next });
   },
 }));
