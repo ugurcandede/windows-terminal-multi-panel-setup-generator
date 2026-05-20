@@ -16,8 +16,8 @@ export function CodeBlock({ code, language, className }: Props) {
     <Highlight code={code} language={language} theme={prismTheme}>
       {({ className: hlClass, style, tokens, getLineProps, getTokenProps }) => (
         <pre
-          className={cn(hlClass, 'h-full overflow-auto p-4 pt-12 font-mono text-xs leading-relaxed', className)}
-          style={style}
+          className={cn(hlClass, 'm-0 p-4 font-mono text-xs leading-relaxed', className)}
+          style={{ ...style, background: 'transparent' }}
         >
           {tokens.map((line, i) => (
             <div key={i} {...getLineProps({ line })}>
