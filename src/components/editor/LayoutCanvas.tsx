@@ -1,4 +1,5 @@
 import { Panel as RPanel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { Minus, Square, Terminal, X } from 'lucide-react';
 import { useEditorStore } from '@/store/editorStore';
 import { useLayoutTree, type LayoutNode } from './useLayoutTree';
 import { PaneNode } from './PaneNode';
@@ -58,15 +59,46 @@ export function LayoutCanvas() {
     );
   }
 
+  const tabTitle = panels[0]?.title?.trim() || 'Windows Terminal';
+
   return (
-    <div className="flex h-full flex-col gap-2 p-4">
-      <div className="flex items-center gap-2 rounded-t-md bg-zinc-800 px-3 py-2 text-xs text-zinc-300">
-        <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
-        <span className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
-        <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
-        <span className="ml-3">Windows Terminal — drag splitters to resize, right-click a pane for actions</span>
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-stretch rounded-t-md bg-zinc-900 text-xs text-zinc-300 ring-1 ring-zinc-800">
+        <div className="flex items-center gap-2 border-b-2 border-[var(--accent)] bg-zinc-800 px-3 py-1.5">
+          <Terminal className="h-3.5 w-3.5 text-zinc-400" />
+          <span className="font-medium">{tabTitle}</span>
+        </div>
+        <span className="ml-auto self-center px-3 text-[10px] text-zinc-500">
+          drag splitters · right-click for actions
+        </span>
+        <div className="flex items-stretch">
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="flex w-10 items-center justify-center text-zinc-400 transition-colors hover:bg-zinc-700"
+          >
+            <Minus className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="flex w-10 items-center justify-center text-zinc-400 transition-colors hover:bg-zinc-700"
+          >
+            <Square className="h-3 w-3" />
+          </button>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="flex w-10 items-center justify-center text-zinc-400 transition-colors hover:bg-[#e81123] hover:text-white"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
-      <div className="flex-1 overflow-hidden rounded-b-md bg-zinc-900 p-2">
+      <div className="flex-1 overflow-hidden rounded-b-md bg-zinc-900 p-2 ring-1 ring-zinc-800">
         <div key={structureKey} className="h-full w-full">
           {renderNode({ node: tree, onResize: resizePane })}
         </div>
