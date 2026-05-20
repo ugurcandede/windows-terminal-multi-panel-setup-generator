@@ -1,7 +1,7 @@
 import { AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/Popover';
 import { useValidation } from '@/hooks/useValidation';
-import { useEditorStore } from '@/store/editorStore';
+import { useActivePanels, useEditorStore } from '@/store/editorStore';
 import { cn } from '@/lib/utils/cn';
 
 const fieldLabel: Record<string, string> = {
@@ -17,7 +17,7 @@ const fieldLabel: Record<string, string> = {
 
 export function ValidationBadge() {
   const snap = useValidation();
-  const panels = useEditorStore((s) => s.panels);
+  const panels = useActivePanels();
   const setSelected = useEditorStore((s) => s.setSelected);
 
   const { errorCount, warningCount, byPanel } = snap;

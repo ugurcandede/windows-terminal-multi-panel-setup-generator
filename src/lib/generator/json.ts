@@ -1,5 +1,6 @@
 import type { Panel } from '@/types/panel';
 import { DEFAULT_COLOR, DEFAULT_SIZE } from '@/types/panel';
+import type { Tab } from '@/types/tab';
 import { escapePSSingleQuoted, normalizeWinPath } from './escape';
 
 interface NewTabAction {
@@ -44,22 +45,47 @@ const buildCommandline = (directory: string, commands: string): string => {
   return `pwsh -Command "${inner}"`;
 };
 
-const generateActionName = (panels: Panel[]): string => {
-  if (panels.length === 1) {
-    return panels[0].title || 'Single Panel Setup';
-  }
-  const titles = panels
-    .map((p) => p.title)
-    .filter((t) => t && !/^Panel\s+\d+$/i.test(t))
-    .slice(0, 3);
-  if (titles.length > 0) {
-    return titles.join(' + ') + (panels.length > 3 ? ' + more' : '');
-  }
-  return `${panels.length} Panel Setup`;
+const buildNewTab = (p: Panel): NewTabAction => {
+  const a: NewTabAction = {
+    action: 'newTab',
+    commandline: buildCommandline(p.directory, p.commands),
+    suppressApplicationTitle: true,
+  };
+  if (p.directory) a.startingDirectory = normalizeWinPath(p.directory);
+  if (p.title) a.tabTitle = p.title;
+  if (p.color && p.color !== DEFAULT_COLOR) a.tabColor = p.color;
+  return a;
 };
 
-export const generateJSON = (panels: Panel[]): string => {
-  if (!panels || panels.length === 0) {
+const buildSplitPane = (p: Panel): SplitPaneAction => {
+  const a: SplitPaneAction = {
+    action: 'splitPane',
+    split: p.split ?? 'vertical',
+    commandline: buildCommandline(p.directory, p.commands),
+    suppressApplicationTitle: true,
+  };
+  if (p.size && p.size !== DEFAULT_SIZE) a.size = p.size;
+  if (p.directory) a.startingDirectory = normalizeWinPath(p.directory);
+  if (p.title) a.tabTitle = p.title;
+  if (p.color && p.color !== DEFAULT_COLOR) a.tabColor = p.color;
+  return a;
+};
+
+const generateActionName = (tabs: Tab[]): string => {
+  const allTitles = tabs.flatMap((t) => t.panels.map((p) => p.title));
+  const named = allTitles.filter((t) => t && !/^Panel\s+\d+$/i.test(t)).slice(0, 3);
+  if (named.length > 0) {
+    return named.join(' + ') + (allTitles.length > 3 ? ' + more' : '');
+  }
+  const totalPanels = tabs.reduce((n, t) => n + t.panels.length, 0);
+  if (totalPanels === 1) return 'Single Panel Setup';
+  return `${totalPanels} Panel Setup`;
+};
+
+export const generateJSON = (tabs: Tab[]): string => {
+  const totalPanels = tabs?.reduce((n, t) => n + t.panels.length, 0) ?? 0;
+
+  if (!tabs || totalPanels === 0) {
     return JSON.stringify(
       {
         command: { action: 'newTab', tabTitle: 'Empty Configuration' },
@@ -73,36 +99,19 @@ export const generateJSON = (panels: Panel[]): string => {
 
   const actions: WtAction[] = [];
 
-  const first = panels[0];
-  const firstAction: NewTabAction = {
-    action: 'newTab',
-    commandline: buildCommandline(first.directory, first.commands),
-    suppressApplicationTitle: true,
-  };
-  if (first.directory) firstAction.startingDirectory = normalizeWinPath(first.directory);
-  if (first.title) firstAction.tabTitle = first.title;
-  if (first.color && first.color !== DEFAULT_COLOR) firstAction.tabColor = first.color;
-  actions.push(firstAction);
-
-  for (const panel of panels.slice(1)) {
-    const splitAction: SplitPaneAction = {
-      action: 'splitPane',
-      split: panel.split ?? 'vertical',
-      commandline: buildCommandline(panel.directory, panel.commands),
-      suppressApplicationTitle: true,
-    };
-    if (panel.size && panel.size !== DEFAULT_SIZE) splitAction.size = panel.size;
-    if (panel.directory) splitAction.startingDirectory = normalizeWinPath(panel.directory);
-    if (panel.title) splitAction.tabTitle = panel.title;
-    if (panel.color && panel.color !== DEFAULT_COLOR) splitAction.tabColor = panel.color;
-    actions.push(splitAction);
+  for (const tab of tabs) {
+    if (tab.panels.length === 0) continue;
+    actions.push(buildNewTab(tab.panels[0]));
+    for (const panel of tab.panels.slice(1)) {
+      actions.push(buildSplitPane(panel));
+    }
   }
 
   actions.push({ action: 'moveFocus', direction: 'first' });
 
   const result: MultipleActions = {
     command: { action: 'multipleActions', actions },
-    name: generateActionName(panels),
+    name: generateActionName(tabs),
     icon: '🚀',
   };
 

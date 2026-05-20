@@ -6,8 +6,8 @@ import { CopyButton } from './CopyButton';
 import { CodeBlock } from './CodeBlock';
 
 export function OutputTabs() {
-  const panels = useEditorStore((s) => s.panels);
-  const output = useMemo(() => generateAll(panels), [panels]);
+  const tabs = useEditorStore((s) => s.tabs);
+  const output = useMemo(() => generateAll(tabs), [tabs]);
 
   return (
     <div className="flex h-full flex-col border-t border-zinc-200 dark:border-zinc-800">

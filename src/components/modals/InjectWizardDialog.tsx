@@ -32,8 +32,8 @@ const STEPS = [
 export function InjectWizardDialog() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
-  const panels = useEditorStore((s) => s.panels);
-  const json = useMemo(() => generateJSON(panels), [panels]);
+  const tabs = useEditorStore((s) => s.tabs);
+  const json = useMemo(() => generateJSON(tabs), [tabs]);
 
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));

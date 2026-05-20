@@ -5,14 +5,15 @@ import { useEditorStore } from '@/store/editorStore';
 import { downloadConfigFile, readConfigFile } from '@/lib/share/fileShare';
 
 export function ImportExportButtons() {
-  const panels = useEditorStore((s) => s.panels);
-  const loadPanels = useEditorStore((s) => s.loadPanels);
+  const tabs = useEditorStore((s) => s.tabs);
+  const loadTabs = useEditorStore((s) => s.loadTabs);
+  const totalPanels = tabs.reduce((n, t) => n + t.panels.length, 0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleExport = () => {
-    if (panels.length === 0) return;
-    downloadConfigFile(panels);
+    if (totalPanels === 0) return;
+    downloadConfigFile(tabs);
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +21,7 @@ export function ImportExportButtons() {
     if (!file) return;
     try {
       const imported = await readConfigFile(file);
-      loadPanels(imported);
+      loadTabs(imported);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Import failed');

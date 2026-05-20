@@ -3,6 +3,7 @@ import { TopBar } from './TopBar';
 import { Footer } from './Footer';
 import { PanelList } from '@/components/panels-rail/PanelList';
 import { LayoutCanvas } from '@/components/editor/LayoutCanvas';
+import { TabStrip } from '@/components/editor/TabStrip';
 import { InspectorPanel } from '@/components/inspector/InspectorPanel';
 import { OutputTabs } from '@/components/output/OutputTabs';
 import { ShortcutsDialog } from '@/components/modals/ShortcutsDialog';
@@ -26,6 +27,7 @@ export function AppShell() {
           <PanelList />
         </aside>
         <main className="flex flex-col overflow-hidden">
+          <TabStrip />
           <div className="flex-1 overflow-hidden">
             <LayoutCanvas />
           </div>

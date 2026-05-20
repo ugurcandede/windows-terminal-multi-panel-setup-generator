@@ -1,6 +1,6 @@
 import { Panel as RPanel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Minus, Square, Terminal, X } from 'lucide-react';
-import { useEditorStore } from '@/store/editorStore';
+import { useActivePanels, useEditorStore } from '@/store/editorStore';
 import { useLayoutTree, type LayoutNode } from './useLayoutTree';
 import { PaneNode } from './PaneNode';
 
@@ -42,7 +42,7 @@ function renderNode({ node, onResize }: RenderProps): JSX.Element {
 }
 
 export function LayoutCanvas() {
-  const panels = useEditorStore((s) => s.panels);
+  const panels = useActivePanels();
   const resizePane = useEditorStore((s) => s.resizePane);
   const tree = useLayoutTree(panels);
 

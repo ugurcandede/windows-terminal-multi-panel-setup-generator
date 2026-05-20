@@ -6,10 +6,11 @@ import { buildShareUrl } from '@/lib/share/urlShare';
 
 export function ShareUrlButton() {
   const [copied, setCopied] = useState(false);
-  const panels = useEditorStore((s) => s.panels);
+  const tabs = useEditorStore((s) => s.tabs);
+  const totalPanels = tabs.reduce((n, t) => n + t.panels.length, 0);
 
   const handleShare = async () => {
-    const url = buildShareUrl(panels);
+    const url = buildShareUrl(tabs);
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -20,7 +21,7 @@ export function ShareUrlButton() {
   };
 
   return (
-    <Button variant="outline" size="sm" onClick={handleShare} disabled={panels.length === 0}>
+    <Button variant="outline" size="sm" onClick={handleShare} disabled={totalPanels === 0}>
       {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Link2 className="h-3.5 w-3.5" />}
       {copied ? 'Link copied' : 'Share link'}
     </Button>

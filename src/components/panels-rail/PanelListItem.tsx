@@ -14,7 +14,9 @@ export function PanelListItem({ panel, index }: Props) {
   const selectedId = useEditorStore((s) => s.selectedId);
   const setSelected = useEditorStore((s) => s.setSelected);
   const deletePanel = useEditorStore((s) => s.deletePanel);
-  const panelsLen = useEditorStore((s) => s.panels.length);
+  const panelsLen = useEditorStore((s) =>
+    s.tabs.find((t) => t.id === s.activeTabId)?.panels.length ?? 0
+  );
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: panel.id,
